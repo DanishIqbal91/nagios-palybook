@@ -1,0 +1,9 @@
+---
+- hosts: cloud
+  become_user: true
+  #sudo : yes
+  tasks:
+  
+    - name: Update Server
+      apt:
+        update_cache: yes

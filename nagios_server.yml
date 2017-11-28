@@ -1,0 +1,49 @@
+---
+- hosts: cloud
+  become_user: true
+  #sudo : yes
+
+  vars:
+    nagiosadmin_username: nagiosadmin
+    nagiosadmin_password: root
+  tasks:
+  
+    - name: Installing the prerequisites
+      apt: name={{item}} state=installed
+      with_items:
+        - wget 
+        - build-essential 
+        - apache2 
+        - php 
+        #- apache2-mod-php7.0 
+        - php-gd 
+        - libgd-dev 
+        - sendmail 
+        - unzip
+        - python2.7
+      
+      when:
+        - ansible_os_family == "Debian"
+          
+    - name: Group configuration
+      group: name=nagcmd state=present
+
+    - name: User configuration
+      user: name=nagios shell=/bin/bash groups=nagcmd append=yes
+
+    
+    
+    - name: Download Nagios server installer
+      get_url: url=https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.2.0.tar.gz dest=/root/tmp
+
+    - name: Extract  tarball
+      command: tar -xzf nagios*.tar.gz chdir=/root/tmp
+
+    
+
+    #- name: Change the working directory to nagios-4.2.0/ before executing the command.
+     # shell: somescript.sh >> somelog.txt
+      #args:
+       # chdir: nagios-4.2.0/
+
+
